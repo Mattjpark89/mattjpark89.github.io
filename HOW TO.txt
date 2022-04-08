@@ -1,0 +1,1408 @@
+The enemies in source are NOT FINISHED; I only included them to reference.
+Only the Galliosaur and serpentmage have modern setups, so use them as guidelines.
+	DO NOT USE any of the victim clips in the older enemies!!!
+	ONLY the modern template victim clips will work properly.
+Most of the older code still can work from the older enemies.
+
+IMPORTANT:
+
+make your monster with the "Template_2019.fla". Copy Paste and rename the file to your monsters name.
+
+Do not change "BarbftrPlayer_2020_D.fla". It should NOT be messed with at all.
+Open the monstermaker along with your monsters .fla, use the external.xml, and debug this way if needed
+
+Put your external enemies in external.xml. The game will load then.
+
+No censorship for:
+	Bellies
+	Burps
+	Digestion/End anims 
+	Mild Violence
+Censorship option: "showDirty" -> Sexually implicit (Mature)
+	G.getOption( "showDirty" );
+		Extreme Violence (gore, spillage, intently violent acts)
+		Anal stuff (butt vore, anal vore, UB like things)
+		Poop / Pee / Urine / Excriment
+		ANY ALMOST NAUGHTY THINGS (anal vore, puckers, fluids)
+Censorship option: "showNaughty" -> Sexually Explicit (Adults only, porn)
+	G.getOption( "showNaughty" );
+		Cocks, Dicks, Cock vore
+		Unbirth, vaginal fluids
+		ANY NAUGHTY BITS (dirty + breasts with nipples, sexual organs)
+
+TODO:
+	BETTER gui monster select (information when moused over? store pictures?)
+		-> WIP; problem is pictures... use text/ numbers or SOMETHING first? color GRID background?
+		-> Make a "url -> color" hash; this will at least HELP;
+			"url -> geometry" hash as well (basic line cut shapes from a 3x3 grid?)
+				Unique thing to geometry
+	ACTUAL gameplay? (each room has 1 monster and at most 1 item in it?)
+	ABILITY to load in different framerate monsters? (30/60 fps style?)
+	
+	Make gui more flexible; Change it so it marquee's information?
+	Make log text smaller so we can display more lines of it
+		-> Text popups via 9scaling?
+	Add More enemy controls
+	Add Flexible AI system
+	Add generic anthro player victim (varient style)
+	
+	DONE DYNAMIC background loading? (from image externally?)
+	
+CHANGELOG
+
+	2020-05-20
+		Corrected and added dot shadows (performance) instead of dumb accurate shadows.
+		FIXED speed glitch (was a mere array overrun that was SO SUBTLE you never noticed)
+			
+	2018-11-23
+		Added:
+			G.enemyCallIgnoreHitCallback( "variablename" );	//Set G.V["variablename"] = function ( G, Obj, hittype, hitdamage )
+			G.playerEnemyCenterAbsoluteDistance()
+			G.playerSignedDistanceFix()
+			G.enemySetPlayerHitCallbackName( "variablename" );	//Set G.V["variablename"] = function ( G, Obj, hittype, 
+			G.histPick( A, W );	//Can give it just an array, or the array of values, then the array of weights. Returns one of the values from the array based on the weights (or uniformly if not provided)
+				//Replaces the weird syntax 	["atkl", "atkm", "atkh"][ G.histSelect( new Array( 1, 1, 1 ) ) ];
+	2018-10-06
+		Updated:
+			Added support for hold + tap directions to G.setEscape
+				
+				G.setEscape( this, "belly_eject", "TL TR TU TD", 3, 0 );//Strugging in Tap left, tap right, tap up, tap down inputs (3 times in a row) is enough to get vomited
+				G.setEscape( this, "belly_deeper", "HD", 3, 0 );//Holding/Pleasing down moves you deeper into the belly, if you do this 3 times
+			
+			Added support for hold + tap directions to G.setEscape
+				
+				var WigObj:Object = new Object();
+				WigObj.tl = "snort_belly1_wigL";	//tap left
+				WigObj.tr = "snort_belly1_wigR";	//tap right
+				WigObj.tu = "snort_belly1_wigU";	//tap up
+				WigObj.td = "snort_belly1_wigD";	//tap down
+
+				WigObj.hl = "belly1_pleaseL";	//hold left
+				WigObj.hr = "belly1_pleaseR";	//hold right
+				WigObj.hu = "belly1_pleaseU";	//hold up
+				WigObj.hd = "belly1_pleaseD";	//hold down
+
+				G.setAnims( this, WigObj );
+	
+	2018-08-06
+		Added:
+			Ability to play music when it is embedded; requires a instance of a empty movie clip named "music" and the following code inside if( G.manualReset( this ) ){
+			
+				if( G.manualReset( this ) ){
+				
+					...
+				
+					var mysound = new Sound( this._parent.music );	//Have to create a sound object
+					mysound.attachSound( "sound ID / class name" );	//Then attach it
+					this._parent.music.snd = mysound;	//Then assign it to the music object as the variable 'snd'
+					
+				//Note that the clip music just has to be a movie clip, as it is used as the timeline for playing the sound.
+	
+	2018-07-25
+		Added:
+			G.enemySetFacing( v )	// -1 for left, 1 for right. G.enemySetFacing( -G.enemyFacing() ) will turn the enemy around
+	
+	2018-07-07
+		Fixed:
+			G.setBackgroundData(data)	//Custom per monster bitmap backgrounds didnt work right on zoom in, now they should work (keep them less than 1000px wide about. Max is 2880/2 ?)
+	
+	2018-07-01
+		Added:
+			G.requestUseBarb( 10 );	//We DEMAND using the new barb (style 10+) (or any indexed barb graphic)
+
+	2018-06-25
+		Fixed:
+			Stage.scaleMode = "showAll";	//"exactFit", "showAll", "noBorder" 
+
+	2018-06-24
+		Added:
+			G.enemyPrevAnim()	//Get the previously used animation (can get clobbered, be careful)
+			G.enemyPrevAnimClear();	//Clear out previously called animation
+			G.playerDistanceNF()	//REturns the bounding box distance the player is from the enemy, signed, in world coordinates.
+		Fixed:
+			New Enemy resets y position to avoid floating enemies
+			Autobarb key += conflicting with END key
+	2018-06-22
+		Added:
+			G.setBackgroundData(data)	//Set the background to one of the builtins or a BitmapData
+			[NOT YET] Custom backgrounds per character
+		Fixed:
+			Background not changing when character loads (dumb logic checking for deltax)
+			Background wraps properly now (dumb logic completely wrong for deltax)
+			Weird sliding bug (should never use ._x as a storage value, since it has a precision max of 1/20th pixel)
+	2018-06-10
+		Added:
+			G.getPlayerRemainingHealthPercent();	//Returns 1.0 for full health, 0.0 for no health.
+			G.bhistCreate( returnvalues, values, arrayofhistograms )	//Construct a blendable histogram set
+			G.bhistSample( bhistobject, value )	//Sample a blendable histogram set from a sinagle parameter value
+			G.decodePlayerAct()	//Attempts to return a lexical version of what the player is doing...
+			G.hitPlayerAny( clip )	//Attempt to do a SINGLE point test
+	2018-06-05
+		Upgraded to HD resolution / 960x540 size (scaled to 1424x801 to be compatible with old 1000x800 size)
+		Added:
+			G.setEnemyRollOption( v );	//Set to 0 to NOT block rolls (anytime)
+			G.getEnemyRollOption();	//Returns the current roll option
+		Fixed:
+			G.playerSignedDistance() Works when rolling, to a extent (no bounding box so values can deconverge)
+	2015-06-30
+		Added:
+			G.setEnemyAINoAutoIdle( 1 );	//If set to 1, enemy will not automatically go back to idle animation
+	2015-05-12
+		Added:
+			G.getEnemyURL( enemyid );	//use with G.enemyGetID();			
+			G.setCustomGui( path, frame );	//Either pass a swf to use, or it will use the current enemy. Uses exact frame "customGui". escape or backspace quits it.
+				Example:
+					G.setCustomGui( 0 );	//Use default gui (Resets it)
+				Example:
+					G.setCustomGui();	//Uses current enemy and frame "customGui"
+				Example:
+					G.setCustomGui( undefined, "some frame" );	//Uses current enemy frame "some frame"
+				Example:
+					G.setCustomGui( "someSWF.swf" );	//Uses another swf, with "customGui" frame
+				Example:
+					G.setCustomGui( "someSWF.swf", "specific frame" );	//Uses another swf, with a specific frame
+	2015-05-10
+		Added:
+			G.actSetBusy( target, value );
+			G.actSetMove( target, amt );	//Set the move amount DIRECTLY.
+			G.hitPlayerAttack( clip );	//Returns true if the given clip hits a player's ATTACK box.
+			G.playerGetXPosition();	//Returns global X position of player.
+			G.actGet( target )	//Returns the action state, for AI stuff as an object
+	2015-05-09
+		Added:
+			G.enemySetViewBetween( bool )	//Give a nonzero value to ENABLE showing player on the vicsync layer.
+	2015-04-19
+		Added:
+			G.playerSignedDistance( targ );	//Returns the distance from the cbox to the players cbox, signed to that edge (useful for relative position)
+			
+	2015-01-19
+		Added:
+			NEW player/prey syncing invites HUGE possibilities;
+				-> Template NO LONGER includes copies of player!!
+				-> Only the player stores the player characters. Enemies are free from that burden.
+				-> Tested and seems to be frame perfect. I expect there may be a condition this can get broken.
+				-> Player syncing now can use all existing player animations, and more.
+				-> Animations work too! simple simple.
+				-> Possibly can place the player at the CORRECT level ALWAYS! how interesting... (if player overlaps enemy, place them there and hide actual player?)
+			Nothing for the user to do! nice, eh?
+
+	2015-01-18
+		Added:
+			G.enemyPlay( anim )	//Easier for AI, plays the animation on the enemy ( G.goPlay( this, "anim" ) replacement )
+			G.enemyCurrAnim()	//Get current animation
+			G.enemySetAIFunction( fptr );	//Advanced, lets you write your own AI
+			
+	2015-01-12
+		Added:
+			G.qteEvent( frames, typeobject )	//Start a quick time event! a few to choose from
+				Example: 
+					//This starts a QTE where you have to mash directions for 30 frames!
+					G.qteEvent( 30, new Object( { type:3 } ) );
+			
+			G.setBlockEscape( nframes )
+				Block player from struggling for nframes. this will RESET the counter each time it is called.
+				This is a pretty severe punishment! Use with caution.
+			G.enemyPlaceFromPlayer( x, y );
+				Place (instantly) the enemy relative to the player in pixels; this is for arial drops or when the enemy is offscreen enough.
+			G.enemyGetXPosition()
+				Get the enemies X position (used for recenter later)
+			G.enemyRecenter( atx )
+				Recenter enemy at a specific X position
+	
+	2015-01-08
+		Added:
+			G.chatMessage( msg, flags );//SAY a chat message (stacks) with optional display flags
+				Example: 
+					G.chatMessage( "My %[playername] you look tasty today~" );
+				Example (won't repeat messages with flag & 1: 
+					G.chatMessage( "My %[playername] you look tasty today~", 1 );
+	2015-01-07
+		Added:
+			G.chatMessage( msg );//SAY a chat message (stacks)
+				Example: 
+					G.chatMessage( "My %[playername] you look tasty today~" );
+			G.chatClear();//Clear the chat message (scrolls back up)
+				Example: 
+					G.chatClear();
+			G.chatType( framename );//!< Set the frame of the chat background, returns target background clip
+				Example: 
+					G.chatType( 1 );
+				1 = normal white
+				2 = thought white
+			G.chatTarget( mclip );//!< Set the target to try and follow with the speak targeting triangle so you can color it. No argument clears it.
+				Example: 
+					G.chatTarget( this.head );
+					
+	2015-01-06
+		Added Indicator for can hug/can't hug
+		Added icon loading/saving to external.xml, list loading and saving, and preloading
+		Fixed some bugs
+		Fixed HTTP/HTTPS problem
+		NOTE that enemies can be made with ANY FLASH that compiles to AS2.0 flash player 8
+	
+	2014-12-21
+		Added:
+			Censorship options ( you can do this yourself: )
+				G.getOption( "showDirty" );
+				G.getOption( "showNaughty" );
+				
+				_root.controller.getOption( "showDirty" );
+				_root.controller.getOption( "showNaughty" );
+			Buttons to control Naughty/Dirty level
+		
+	2014-12-20
+		Added: 
+			G.setPreSync( Obj, func )
+			NEW Enemy selection gui
+			NEW attack mode button and display
+			NEW explore GUI display (shows what struggling can lead to, in most cases. cannot peel inside states though)
+			Fixed numerous glitches with collisions, AI and a few other internal issues
+	
+	2014-12-15
+		Added: 
+			URLListLoading
+				-> Click the upper right, and paste your url list into the large edit box.
+				Then click the "Load List" button
+				Example data:
+
+					#comments!
+					enemies/Anthro Rex Ext.swf
+
+					#Something something something
+					enemies/Lizzy
+
+			G.enemyGetID()
+			G.getPlayerSubGraphic()
+			G.setPlayerGraphic( sid, subid )
+		
+	2014-12-09
+		Feature: Make enemy selection way better (images like RX8...)
+			-> Hm. "add url" to pack? cookies? ...
+		Bug: Enemies can't be instructed to NOT attack
+			-> AI mode option? Hm.
+		Q: Is using audio events causing file bloat?
+			-> test by removing the events and comparing (use Sound playback scripts instead? hm...)
+		FIXED: Error: shadow plays when paused for ext. clips
+		FIXED: All enemies displayed in grid once loaded (no click to use)
+		HACK Error: Provide autoscaling victim clips
+			-> NOT trivial to fix due to victim clip implementation; make wrapper for scaling? ...
+			-> Using sync fixes this issue if you name victim clips.
+		Added:
+			External loading is used and enforced by ExternalTemplate4.fla, removing all enemies.
+		
+	2014-10-27
+		FIXED: Sometimes, ext. clips are not scaled right when they load
+		FIXED: Sounds play when ext clips are loaded
+		
+	2014-10-20
+		DONE Error: pausing while shrunk == seziure
+		Added:
+			New external enemy format EXACTLY mimics internal format. Use this for making monsters.
+			external.xml so you can load a list of your own external enemies.
+			G.setPostSync( Obj, func );	//This function is called AFTER all the syncing is done (for well positioned animations) function is of the form function( G, Obj, extra ){};
+
+	2014-10-17
+		DONE Request: Add in a new "pet" attack to things; "atkp" for all players "hitp" for all enemies. Query mode, and have enemies toggle allowing pets or not.
+		FIXED: mouse control visualizer thingy broken?
+		Added:
+			G.victoryStatus();	//0 means NO victory, 1 == given, -1 == kill
+			G.victoryRequest( nextenemy );	//Instantly win against enemy WITHOUT killing them (make each enemy a "maze" to solve...) if nextenemy isn't defined, goes in order.
+				->Note, you must generate a map to make this work of NAME -> INDEX... or using raw indicies is BAD! so.
+			RAPIDLY TAPPING DOWN == Attack Mode Change (pet mode/attack mode)
+			G.getPlayerMode();	//Returns the player mode. 0 is normal, 1 is "hug" mode (pet)
+			G.enemySetAllowPets( doit );	//Allow PETTING of this enemy (you must have a "hitp" animation) if set to 1. 0 disables petting! (default)
+	2014-10-16
+		Added
+			G.syncSubclip( main, subclip, animation, callback );	//For internal shots and other sync clips, keeps the subclip synchronized with the main animations offset correctly. (must match # of frames 1:1) Can also call a function (G, obj, target) after applying animation sync.
+
+	2014-10-15
+		FIXED: Bug: Player still plays animations in qte/paused mode? ... hm.
+		FIXED: Bug: QTE's don't work in slow mode??
+		FIXED: Bug: Player is invisible when show consumed player is true?? ... hm.
+		
+	2014-10-14
+		Fixed some strange glitch with hits and stuff
+		Fixed some of the animation glitches
+		Changed a few things for stability
+		Added changing player scale with accopanying zoom, so you can shrink the player! note your monster should use only a discrete size and check it.
+		Added
+			G.setPlayerScale( val )	//Set player scale (100 is default) Note your monster should be carefult to notice player is scaled; and have the victim clips handled as needed....
+			G.getPlayerScale()//Get player scale (100 is default) Note your monster should be carefult to notice player is scaled; and have the victim clips handled as needed....
+			G.syncSubclip( main, subclip, animation );	//For internal shots and other sync clips, keeps the subclip synchronized with the main animations offset correctly. (must match # of frames 1:1)
+
+	2014-09-06
+		Added:
+			G.pointsSetPerDamage( value )	//Set the points recieved per HP of damage dealt to enemy (0 is disable!)
+			G.pointsAdd( amount, dontuselog ) //Add this many points to the player's score for this battle. Optionally, you can disable the logging of these points by seeting the second argument to 1
+			G.pointsGet( amount ) //Get current total points scored
+			G.pointsGetFightDelta( amount ) //Get current number of points scored since the start of the current battle
+			G.enemySetIgnoreWeakHits( value );	//If set to 0 or higher, attacks that do that amount of damage or LESS will not play hit animations. Set to -1 for normal, or pass no arguments.
+			G.setHMLDef( vh, vm, vl );	//Sets the high, medium and low defense stats in one call.
+			G.setHMLAtk( vh, vm, vl );	//Sets the high, medium and low attack stats in one call.
+		
+	2014-08-27
+		Bug: Enemy offset cbox isn't used in AI calculation; fix this so attakcs occur when THAT box happens.	
+		Added:
+			G.qteEvent( frames, typeobject )	//Start a quick time event! a few to choose from
+			G.qteCheck()	//Check if the QTE was won
+			G.qteAbort()	//Abort the QTE	
+	2014-08-23
+		Bug: Enemy offset cbox isn't used in AI calculation; fix this so attakcs occur when THAT box happens.		
+	2014-08-22
+		FLASHERROR: Shift + F5 over a selected folder layer crashes flash.
+		Added:
+	2014-08-21
+		Bug: Spark clip blinks! not OK. Fix this so spark syncs with speed. fixed.
+		Bug: if you ever G.G. anything, serious errors occur... no possible to fix.
+		Added:
+			G.setEnemySparkAnim( uanim ); //Directly play a animation on the enemy spark, at its current wherever.
+			G.setEnemySparkOnScreen( anim, screenfloatx, screenfloaty, screenscale ) //Place the enemy spark on the screen, relative to the center +-1.0 unit to edge of screen. Screenscale preserves scale of thing.
+			G.isPlayerConsumed() Returns true if the player is consumed; should work for old and new style enemies.
+			G.showConsumedPlayer( true, frozen ); Allows you to show the player even if "consumed", for QTE's and such. Also sets if the player freezes frames or not.
+			G.unscaleEnemySpark() Sets enemy spark scale to 100,100
+	2014-08-20
+		Bug: update clips could get called from shadows; fixed.
+		Bug: Tapping doesn't read well for gui controls! fixed.
+		Added:
+			G.playerTapReset() Resets the tapping (in case something is currently held down, that won't count.)
+			G.playerTapGet() Returns current input string that was TAPPED, not HELD. B L R U D syntax.
+			G.histFromObject( A ) Returns an array histogram from any object histogram. IE sorts keys, returns array of values...
+			G.histToUnityRange( A ) Returns a list that is normalized (sum is now 1 for all elements)
+			G.histBlend( A, B, factor ) Blend histograms together based on a factor 0..1, lengths have to match or it will not work. Returns a NEW histogram that is the linear interpolation of the two histograms.
+			G.getEnemyHP() REturns the exact enemy HP
+			G.enemySetAttackHistogram( low, medium, high ) To adjust the enemy attack usage. Set to something like 3,3,3 or the original (1,1,7). this is a automatic histogram, the largest number is selected MORE commonly. the ratios matter, not the numbers themselves.
+			G.enemyReplaceWalk( newanim )	To replace walking animations... "walk" is default Only use this IN the walk animation itself...
+	2014-07-08
+		Added background color fading options for dramatic and special effects.
+			G.fadeBG( <time>, optionalcolor );
+			G.fadeInBG( <time> );			
+	2014-06-30
+		Fixed rehealthing enemies that die then eat you then get health so they can die again. (Alsnapz found the bug)
+	2014-06-26
+		Added G.getEnemySpark(); so that you can manually fix the spark clip and stuff
+		Added G.setEnemySparkPhysics( "MoveUp,1,Shrink,50" ); To add basic motion to spark clips
+		Added stuff to spark clip (number0, number1, ...) which should be used more?
+		Added G.setPlayerStatus( msg ); so you can set the player status (to warn about stuff)
+	2014-06-24
+		Enemies can be set to NOT play the hit animations G.enemySetDontPlayHitAnimation( v ); for making bossess and more fair fights
+		Added function set and call, so you can make more efficient complicated enemies G.setF( "key", function ); G.callF( "key", arguments );
+		A frame in the enemies clip is labeled "external" and this is the LAST FRAME, don't add anyhting past this. Auto enemy count.
+		Call G.enableFullTrace( 1 ); to show ALL messages if something isn't working. Use trace otherwise, added trace doc
+		Enemies can now turn off their AI, G.setEnemyAIUseAttacks( 0 );
+		addValue creates one if it does not exist
+		Added music play, so MP3's can be played from external files (odd) G.musicPlay( localname )	G.musicStop()	
+	2014-05-29
+		Added external.xml and ability to adjust amount of characters loaded; so you can load many external characters all at once.
+	2014-05-28
+		Made external enemies Identical to internal enemies, bridging THAT gap. Now external enemies CAN be created, though the issue of "new player types" remains (recompile each enemy with new players if added.)
+		Added additional complex struggle directions (L R U D and now LU RU LD RD including with button pressed)
+		Added Set HP button to test enemies that read your HP
+		Changed all fonts to support international character sets (No more fruity microfont)
+		Added conveinience setup for enemies so the setup values no longer have to be in the stupid enemy clip
+
+https://www.youtube.com/watch?v=nMFb5ojY6nY&list=PLjxfDfcRvf5z4CEG6hLnCSDYKbVstThTd
+
+https://www.furaffinity.net/user/imaginaryz/
+https://www.furaffinity.net/user/alsnapz/
+https://www.furaffinity.net/user/stormyrange/
+https://www.furaffinity.net/user/darklord92/
+https://www.furaffinity.net/user/ozythesquirrel/
+https://www.furaffinity.net/user/PwrOf3D/
+https://www.furaffinity.net/user/superflame/
+https://www.furaffinity.net/user/67vorelover67/
+
+***TECHNICAL***
+PLEASE USE ONLY Macromedia Flash 8 Professional to make things. (you can find this all sorts of places, or from me.)
+If you cannot find this, I will not be able to do much with your .fla files since I can't read newer .fla files in older flash programs.
+So this is a problem. A big one. Hence RX8 being moved to C++.
+AS 2.0 and flash player 8 compatibility is used for barbftr.
+
+If you cannot make this happen, you have to use the external loader and make a external enemy instead with Flash AS2.0 and player 8 compatibility
+***END TECHNICAL***
+
+https://www.furaffinity.net/view/8840199/
+http://www.furaffinity.net/view/12732662/
+http://imaginaryz.deviantart.com/art/Barbftr-V-2014-02-12-191550156
+
+I'll have to make a "how to make flash barbftr characters" guide at some point, but there are just a few requirements, the rest is anims.
+For instance, each character MUST be properly centered, and you have to pay attention to scale (I reccomend 250% scale, in raptors's case. Lizzy is 166% or something weird. I screwed up there.)
+And there must be a cbox to define the players physical self!
+abox are for attacks! sbox no longer needed, use a Code Block to do updates or handle vore animations.
+
+YOU CAN USE A camera CLIP! (refer to raptor, lizzy and gator's nom animations. The camera is straightforward and will help you IMMENSELY)
+
+THERE ARE ONLY A FEW SPECIFIC (very specific) victim clips allowed to be used,
+PLayerstuff / VIC Clips (use in vore anims) /
+
+ONLY use victim clips in your animations from the ABOVE FOLDER.
+
+FOR ONCE, ALL code is in the timeline, there is NO CODE on anything else.
+
+DROP IN code blocks to perform specific functions (see examples like lizzy) such as handle belly, or just call an update function.
+
+
+REFER TO:
+
+	Window -> Library OR Ctrl+L to open library in flash.
+
+		Enemies / Enemies / OrangeRaptor / OrangeRaptor
+		Enemies / Enemies / lizzy enemy / lizzy enemy
+		Enemies / Enemies / Gator / Fat Gator
+
+	double click the symbol to edit it.
+
+	Basically, copy paste raptor's functionality to make your owh character.
+	Edit to do neat things
+
+
+All enemies must have:
+	Facing forward is LEFT TO RIGHT, so everything looks to the RIGHT.
+
+	"idle"	Standing around
+	"walk"	Moving (from left to right)
+	"death"	Death animation, after all health is exhausted
+	"dead"	After death, this is the creature's "dead"/"corpse" pose
+	"hith"	When creature is hit with a high attack
+	"hitm"	When creature is hit with a medium attack
+	"hitl"	When creature is hit with a low attack
+	"atkm"	Attack animation for a mid attack (can use this to go to other attacks)
+	"atkl"	Attack animation for a low attack (can use this to go to other attacks)
+	"atkh"	Attack animation for a high attack (can use this to go to other attacks)
+	
+PAY CAREFUL ATTENTION to the code in each animation. For example,
+"walk" requires
+	G.actMove( this, 3 );
+Where the 3 is the speed. You can change this to suit your enemy as needed.
+
+"death" in lizzy's case has a lot of code,
+
+	G.actHurt( this, 0 );
+	G.endDigestion( this );
+	G.unconsumePlayer( this, 50 );
+	G.actUnbusy();
+	head.eyes.gotoAndStop("dead");
+
+The actHurt( this, 0 ) and G.actUnbusy(); is required to trigger the death,
+
+endDigestion( this ) and unconsumePlayer( this, 50 ); make sure the player is not trapped if the eater dies. 
+
+head.eyes.gotoAndStop("dead");
+	is a custom piece of code, because the animator named lizzy's head clip "head" (refer to <instance name>) you can access it in code! you'll notice her head has eyes that can be animated like this.
+	
+	
+Note that lizzy uses the atkl, atkm, atkh to select a attack to use, with some functions called from G.
+
+This is one way to add more than 3 attacks to an enemy.
+
+On Lizzy's idle animation,
+
+	There is a checkupdate code block, that calls the 
+	
+	function checkUpdate()
+	{
+		//Code here
+	}
+	
+	This code block and that function can be combined to do things every frame (such as pounce!)
+	
+***needs more info***
+	
+	
+	
+USING EXTERNAL ENEMIES:
+
+	Because this barbftr CAN use a externally made enemy (IE it loads a .swf outside of barb itself)
+	You can create private collections of enemies and such at your leisure.
+		
+	Create a file "external.xml" (case sensetive) right next to the barbftr.swf
+	
+	The file is plain text XML formatted like so:
+	
+		<xml>
+		<enemy path="Your Enemy File.swf" />
+		<enemy path="Your Enemy File.swf" />
+		</xml>
+		
+	Simply copy the	<enemy path="Your Enemy File.swf" /> and change "Your Enemy File.swf" to the name of your swf.
+	You can have multiple lines,but there is a upper maximum of 100 (that can be extended if need be later)
+
+	External enemies work EXACTLY like the new format enemies, refer to the current orange raptor's (or lizzy or gator) first frame.
+	There is setupcode that matches the "//SETTING UP THE ENEMY USING NEW SYSTEM" section.
+	
+	The only difference is the external enemy uses the 0,0 coordinate ON THE STAGE exactly like a enemy in the barbftr system uses the 0,0 coordinate in the movie clip.
+	ALL CREATURES FACE FROM LEFT TO RIGHT, so the RIGHT side of the screen is what they look at (tails left, heads right!)
+	
+	
+FUNCTION LIST:
+
+//DEBUGGING AND ERROR FIXING FINDING BUGS USE THIS TO CHECK AND CORRECT ISSUES AND STUFF THAT DOES NOT WORK
+
+	trace( string );
+		Note the function does NOT use G., because it is built into flash.
+		Trace only works in flash, it is not visible when played as a swf.
+		It will print out messages to the error console, so you can trace where something seems fishy (like on a frame that makes a decision)
+		You can use it by adding together values or strings:
+		Example:
+			trace( "Anything" );
+		Example:
+			trace( G.getValue( "love", 0 ) );
+		Example:
+			trace( "love: " + G.getValue( "love", 0 ) );
+		You can also compound statements as well.
+	
+	G.enableFullTrace( level )
+		Call this if you have PROBLEMS, this will generate a trace() so you can see EXACTLY what is happening and WHY
+		Example:
+			G.enableFullTrace( 1 )
+		Example:
+			G.enableFullTrace( 2 )
+		Example:
+			G.enableFullTrace( 3 )
+			
+	G.disableFullTrace()
+		Disable the full tracing (so you can identify problems faster!
+
+	
+//SETTING UP THE ENEMY USING NEW SYSTEM (avoids movement/transfer/external problems):
+
+	G.setScaleValue( v );
+		Set the enemy's scale value, which is default 100, we reccomend 250 (inverse is 40)
+	G.setName( v );
+		Set the enemy's name
+	G.setStatus( v );
+		Set the enemy's status text
+	G.setCredit( v );
+		Set the enemy's credit code/string
+		
+	G.setHAtk( v )
+	G.setMAtk( v )
+	G.setLAtk( v )
+		Set the High, Medium, or Low attack damage (default 1)
+	G.setHDef( v )
+	G.setMDef( v )
+	G.setLDef( v )
+		Set the high, medium or Low defense value (default 0)
+	G.setMaxHP( v )
+		Set the maximum HP
+	G.setHP( v )
+		Set the current HP
+		
+	EXAMPLE:
+		
+		//Put this in the frame code on frame 1, somewhere. Or the first frame of the idle animation; should be frame 1...
+		//Hey look, decoupling from the enemy clip makes this a LOT easier (but more confusing)
+		if( G.manualReset( this ) ){
+			
+			G.setScaleValue( 250.0 );	//set the scale this enemy is modeled at (the scale of your standard victim clips)
+			G.setName( "Raptor" );	//Set the display name
+			G.setStatus( "Silly Dino" );	//set the description/status text
+			G.setCredit( "Z" );	//Set the credit string code
+			
+			G.setHAtk( 6 );	//High attack damage
+			G.setMAtk( 7 );	//Medium attack damage
+			G.setLAtk( 6 );	//Low attack damage
+			
+			G.setHDef( 0 );	//High defense
+			G.setMDef( 1 );	//Medium defense
+			G.setLDef( 2 );	//Low defense
+			
+			G.setMaxHP( 457 );	//MAXIMUM HP
+			G.setHP( 457 );	//Set current HP to maximum
+			
+			//Any other special stuff you want to do here
+			//G.enemySetIgnoreHits( 0 )
+			//G.setEnemyFaceTarget( 1 )
+			//G.setEnemySolid( 1 )
+		}
+
+	
+//CORE FUNCTIONS:
+	
+	//Built in function for flash, plays the requested animation immediately (code after this is ignored, more or less.)
+	//example: gotoAndPlay("walk")`//AVOID USE IF POSSIBLE. REPLACE WITH
+	//gotoAndPlay("animation name")	//AVOID USE IF POSSIBLE. REPLACE WITH
+	//	gotoAndPlay("animation name")
+	//becomes
+	//	G.goPlay( this, "animation name" )	//USE THIS
+	
+	//Can use the G.func( ) or G.( this, data );
+	//Used for CORRECTLY controlling animations. (can do a lot more with this function)
+	G.goPlay( target, animm )
+	
+	//Log special data (with substitutions in it, such as "%[playername] was delicious!" becomes "Barbara was delicious!"
+	//
+	//KNOWN keywords are:
+	//	enemyname		The enemy's name
+	//	enemydescr		The enemy's description text
+	//	enemyhp			The enemy's HP
+	//	playerhp		The players HP
+	//
+	//Also, any VALUE you set (with setValue) can be called here by name. Use this to make pronouns and things.
+	//
+	G.LogParsed( s );
+	
+//CHANCE AND RANDOM FUNCTIONS:
+
+	//Given a percent chance (0.0 .. 100.0) returns true if it randomly passess!
+	//example: if( G.chance( 50 ) ){
+	G.chance( percent )
+	
+	//Chance goes UP as healthpercent goes DOWN to zero
+	//example: if( G.smoothChanceDown( G.getPlayerHealthPercent() ) ){	//Chance increases as player health decreases
+	G.smoothChanceDown( healthpercent )
+	
+	//Chance goes DOWN as healthpercent goes DOWN to zero
+	//example: if( G.smoothChanceUp( G.getPlayerHealthPercent() ) ){	//Chance decreases as player health increases!...
+	G.smoothChanceUp( healthpercent )
+	
+	//Given a percent (0.0 .. 100.0) call the function if that chance occurs. Useful for random things...
+	//example: G.chanceCall( 1/120, G.enemyFacePlayer )	//1/120 percent chance to face the player
+	//example: G.chanceCall( 10, G.healPlayer, this, 5 )	//10 % chance to heal the player 5 units
+	G.chanceCall( percent, function )
+	
+	//Returns a number from 0..1
+	G.rand()
+	//Returns a integer from 0 to n (if n > 0 )
+	G.rand( n )
+	
+	//REturn a random key from the distribution (new Object( { category:value, someothercat:value } );)
+	//	Or Array( 10, 60, 70 ) for frequencies
+	//Note the keys cannot have "", and must be a valid variable name.
+	G.histSelect( histobj );
+	
+	/* ADVANCED COURSE:
+			
+			//Create histograms inside the if( G.manualReset( this ) ){ is reccommended.
+			var H_name = new Object();
+			H_name["a"] = 10;
+			H_name["b"] = 20;
+			H_name["c"] = 50;
+			H_name["d"] = 5;
+			G.setValue( "some_name", H_name );	//Try and make the names match?
+			
+			//Then anywhere in your monsters code you can:	
+			var dothis = G.histSelect( G.getValue( "some_name" ) );
+			
+			//If you are REALLY cool, you can:
+			var someobj = new Object();
+			someobj["a"] = function( G, O )
+			{
+				trace( "called a" );
+			}
+			someobj["b"] = function( G, O )
+			{
+				trace( "called b" );
+			}
+			someobj["c"] = function( G, O )
+			{
+				trace( "called c" );
+			}
+			someobj["d"] = function( G, O )
+			{
+				trace( "called d" );
+			}
+			G.setValue( "my_dispatcher", someobj );
+			
+			var H_name = new Object();
+			H_name["a"] = 10;
+			H_name["b"] = 20;
+			H_name["c"] = 50;
+			H_name["d"] = 5;
+			G.setValue( "my_dispatcher_histo", H_name );	//Try and make the names match?
+			
+			//Then anywhere in your monsters code you can CALL that function:
+			G.getValue( "my_dispatcher" )[ G.histSelect( G.getValue( "my_dispatcher_histo" ) ) ]( G, this );
+			
+	*/
+			
+			
+	G.setF( "key", function );	//Given a function ( like var myfunc = function cool(){ stuff } ) then you can set it to a key and call it later. For efficiency.
+	G.callF( "key", arguments );//Call the function with any # of arguments you like.
+	
+//SPECIAL GAMEPLAY FUNCTIONS
+
+	//Given a this or object, start a QTE event for that object. Type object has the data for this QTE.
+	//	Example:	G.qteEvent( );
+	//		Defaults to tap U D L R B in under 20 frames (2/3 second)
+	//	Example:	G.qteEvent( 30 );
+	//		Defaults to tap U D L R B in under 30 frames (1 second)
+	//
+	//	Example:	G.qteEvent( 15, new Object( { type:0 } ) );
+	//		Tap any key in under 15 frames (1/2 second)
+	//
+	//	Example:	G.qteEvent( 15, new Object( { type:1 } ) );
+	//		Tap a specific direction U D L R in under 15 frames (1/2 second)
+	//
+	//	Example:	G.qteEvent( 22, new Object( { type:2 } ) );
+	//		Tap a specific button U D L R B in under 22 frames (22/30 second)
+	//
+	//	//More QTE types to come... like LARGEST, SMALLEST, puzzle and so on.
+	//	More to come... such as directional puzzles? answers?
+	//
+	//	Full Example:
+	//
+	//	//Call this on some frame: The game will freeze here.
+	//		G.qteEvent( 20 );
+	//
+	//	//On the next frame, check if the player won the QTE
+	//		if( G.qteCheck() ){
+	//			G.goPlay( this, "lowchompmiss" );	//player WON! so play something else.
+	//		}
+	//
+	//	That's it! easy.
+	//
+	G.qteEvent( frames, typeobject )
+	
+	//Given a this or object, returns the status of the qte event, success == true (1) or false (0)
+	G.qteCheck()
+	
+	//Terminate the current QTE, optionally set a status for win/lose. Not sure you can actually use this yet...
+	//	Example:	G.qteAbort();
+	//		Abort, set to fail status
+	//	Example:	G.qteAbort( true );
+	//		Abort, set to win status
+	G.qteAbort();
+	
+	
+//GETTING PLAYER COLLISION BOXES AND OTHER CLIPS AND GEOMETRIC QUERYS DISTANCE:
+
+	//REturns TRUE if the player is facing the enemy. false otherwise
+	//Example:
+	//if( not G.isPlayerFacingEnemy() ){
+	//Example:
+	//if( G.isPlayerFacingEnemy() ){
+	//
+	function isPlayerFacingEnemy()
+	G.isPlayerFacingEnemy()
+
+	//Pass a movieclip clip, returns true if it hits the player head center box
+	G.hitPlayerHeadCenter( clip )
+	
+	//Pass a movieclip clip, returns true if it hits the player head box
+	G.hitPlayerHead( clip )
+	
+	//Pass a movieclip clip, returns true if it hits the player center box
+	G.hitPlayerCenter( clip )
+	
+	//Pass a movieclip clip, returns true if it hits the player at all
+	G.hitPlayer( clip )
+	
+	//Returns +1 for right, -1 for left
+	G.enemyFacing() : Number
+	//Returns true if enemy is facing right
+	G.enemyFacingRight() : Boolean
+	//Returns true if enemy is facing left
+	G.enemyFacingLeft() : Boolean
+
+	//Straightforward, get player input values (legacy)
+	G.playerInputX();	
+	G.playerInputY();
+	G.playerInputA();
+	
+	//Resets the tapping (in case something is currently held down, that won't count.)
+	G.playerTapReset() 
+	
+	//Returns current input string that was TAPPED, not HELD. B L R U D syntax.
+	G.playerTapGet() 
+		//Example usage (QTE) Where we have a CheckUpdate present, we reset the tapping on the first frame.
+		//Then every frame, we check if "U" aka Up is tapped. You can use arrays or randomly selected tapping inputs 
+		//however you like. When success occurs, we G.goPlay( this, "escape" );
+			G.playerTapReset();	//On this frame only... prevents previously tapped things from interfering!
+
+			function checkUpdate()
+			{
+				if( G.playerTapGet() == "U" ){
+					G.goPlay( this, "escape" );//Success!
+				}
+			}
+			
+	//Place the player RELATIVE to the enemy...
+	G.setPlayerAtX( clipfrom, offsetx )
+	
+	// If player is defending high attacks, returns false. otherwise, returns true
+	G.CanVoreHigh()
+	
+	// If player is defending mid attacks, returns false. otherwise, returns true
+	G.CanVoreMid()
+	
+	// If player is defending low attacks, returns false. otherwise, returns true
+	G.CanVoreLow()
+	
+	// If player is defending at all, returns false. otherwise, returns true
+	G.CanVore()
+	
+	//Returns the distance the palyer is from this (usually a enemy!)
+	G.playerDistance( target )
+
+	//Given this, a distance in pixels, returns true if the player is within 0 to distance.
+	//OR, given this, distance, and fardistance, returns true if player is within the fardistance but farther than distance
+	G.playerWithin( target, distance, fardistance )
+	
+	
+//CHANGING PLAYER VALUES AND STATS:
+	
+	//Given the enemy, hurt the player directly
+	G.hurtPlayer( whodoes, amount )
+	
+	//Heal the player
+	G.healPlayer( whodoes, amount )
+	
+	//Can change the player graphic! By index, 1, 2, 3 or so
+	//example: G.setPlayerGraphic(3);
+	G.setPlayerGraphic( sid )
+
+	//Can query the player graphic! Returns the index of the player graphic.
+	//example: if( G.getPlayerGraphic() == 3 ){
+	G.getPlayerGraphic()
+	
+	//Consume the player! (make them consumed)
+	G.consumePlayer( target )
+	
+	//Sounds good, but vacuum pulls player toward enemy. Refer to gator.
+	G.suckPlayer( target, range, speed )
+	
+	//Yup, you fat cheaters.
+	G.instantKillPlayer( target )
+	
+	//Set the player status to something with any text ( like "5..." or "Struggling!" )
+	//Must be SHORT.
+	G.setPlayerStatus( msg );
+	
+//CHANGING ENEMY VALUES AND STATS:
+	
+	//Heal the enemy
+	G.healEnemy( amount, optiona )
+	
+	//Hurt the enemy
+	G.hurtEnemy( amount, optiona )
+	
+	//HUGE cheater! needed for some attacks.
+	G.enemySetIgnoreHits( vals )
+	
+	//Set teh enemy to ignore attacks that are weak, IE do less than value damage:
+	G.enemySetIgnoreWeakHits( value )
+	
+	//Experimental, allows animation prefixes for morphing enemies (IE applying a prefix to ALL animations, refer to gator)
+	//Reset the prefix with:
+	//example: G.setAnimPrefix( this, "" );
+	//
+	G.setAnimPrefix( target, v )
+	
+	//Make the enemy face the player! This is used if you have disabled auto-facing the player.
+	//	Set this.m_dontfacetarget = 1 to not automatically face the player / target.
+	//	Set this.m_notsolid = 1 to disable collisions with the enemy!
+	G.enemyFacePlayer()
+	
+	//solid means the enemy can be collided with!
+	//Can make the enemy NOT solid, by calling:
+	//example: G.setEnemySolid( 0 )
+	//Or make them solid again,
+	//example: G.setEnemySolid( 1 )
+	G.setEnemySolid( v )
+	
+	//Turns on/off auto facing the target (call G.enemyFacePlayer() yourself)
+	//Enable facing the target:
+	//example: G.setEnemyFaceTarget( 1 )
+	//Disable facing the target:
+	//example: G.setEnemyFaceTarget( 0 )
+	G.setEnemyFaceTarget( v )
+	
+	//If set to 1, enemy WILL attack via default AI.
+	//If set to 0, enemy will not attack with default AI (use your own metrics)
+	//function setEnemyAIUseAttacks( v ){ if( v == 1 ){ GLOBAL_ENEMY.m_dontattackauto = undefined; }else{  GLOBAL_ENEMY.m_dontattackauto = 1; } }
+
+	//Set to 1 if you want to play the hit animations, 0 otherwise. (power through hits, cheating!)
+	G.enemySetDontPlayHitAnimation( v );
+	
+	
+	//You can ALTER enemy stats realtime (for special battles, clams)
+	G.setHAtk( v )
+	G.setMAtk( v )
+	G.setLAtk( v )
+	G.setHDef( v )
+	G.setMDef( v )
+	G.setLDef( v )
+	G.setMaxHP( v )
+
+	G.getHAtk( )
+	G.getMAtk( )
+	G.getLAtk( )
+	G.getHDef( )
+	G.getMDef( )
+	G.getLDef( )
+	G.getMaxHP( )
+	
+	G.resetHAtk( v )
+	G.resetMAtk( v )
+	G.resetLAtk( v )
+	G.resetHDef( v )
+	G.resetMDef( v )
+	G.resetLDef( v )
+	G.resetMaxHP( v )
+	
+//PERSISTANT VALUES FOR MORE COMPLICATED INTERACTION
+	
+	G.setValue( key, value );	//Sets a user defined value by key (persistant ONLY per monster.) Example: G.setValue( "lovesme", 10 );
+	G.getValue( key, default )	//Gets a user defined value, returns undefined (or default if provided) if it does not exist.(persistant ONLY per monster.) Example: G.getValue( "lovesme" );
+	G.hasValue( key )	//Returns true if this value exists. (persistant ONLY per monster.)Example: G.hasValue( "lovesme" );
+	G.addValue( key, addto );	//If you add a value to a existing one, make sure it's a numbner. Adds addto to the keyed value.
+	
+	
+	G.setF( "key", function );	//Given a function ( like var myfunc = function cool(){ stuff } ) then you can set it to a key and call it later. For efficiency.
+	G.callF( "key", arguments );//Call the function with any # of arguments you like.
+	
+//VORE SPECIFIC CONTROLS:
+	
+	//Don't call this, wipes out digestion structure
+	G.initDigestion( target )
+	
+	//start digesting! (don't forget to call update)
+	//	"onehpperframes" is 30 by default, which is 1 hp per second. 60 is 1 hp in two seconds. 0 is NO damage done.
+	G.startDigestion( target, onehpperframes )
+	
+	//Stop digesting!
+	G.stopDigestion( target )
+		
+	G.endDigestion( target )
+	
+	//Get the digestion aobject directly
+	G.getDigestion( target )
+	
+	//Returns current # of escapes
+	G.getNumEscapes( targ )
+	
+	//Setup animations for struggles (input -> animation)
+	//does NOT require digestion struct
+	//
+	//Set any number of these you like:
+	//	var WigObj:Object = new Object();
+	//	WigObj.l = "grabstrugglel";	//move left
+	//	WigObj.r = "grabstruggler";	//move right
+	//	WigObj.u = "grabstruggleu";	//move up
+	//	WigObj.d = "grabstruggled";	//move down
+	//	WigObj.b = "grabstruggleb";	//tap action?
+	//	WigObj.e = "grabdigestend";	//If the player is dead, do this
+	//	WigObj.bl = "grabpleasel";	//move left + action
+	//	WigObj.br = "grabpleaser";	//move right + action
+	//	WigObj.bu = "grabpleaseu";	//move up + action
+	//	WigObj.bd = "grabpleased";	//move down + action
+	//
+	//	WigObj.lu = "grabstrugglelu";	//move left + up
+	//	WigObj.ru = "grabstruggleru";	//move right + up
+	//	WigObj.ld = "grabstruggleld";	//move left + down
+	//	WigObj.rd = "grabstrugglerd";	//move right + down
+	//	WigObj.blu = "grabpleaselu";	//move left + up + action
+	//	WigObj.bru = "grabpleaseru";	//move right + up + action
+	//	WigObj.bld = "grabpleaseld";	//move left + down + action
+	//	WigObj.brd = "grabpleaserd";	//move right + down + action
+	//	
+	G.setAnims( targ, AO )
+	
+	G.clearAnims( targ, AO )
+	
+	//Setup an escape for this digesting
+	//
+	//nextanim is the next animation to play.
+	//
+	//inputseq is a string of commands, such as "L R U D" or "BD BR" and such.
+	//
+	//	Input command strings:
+	//	
+	//		L	"left"
+	//		R	"right"
+	//		U	"up"
+	//		D	"down"
+	//		B	"button"
+	//		BL	"button left"
+	//		BR	"button right"
+	//		BU	"button up"
+	//		BD	"button down"
+	//		W	Wait (in seconds)
+	//		E	Death (player hp < 1)
+	//
+	//		LU	"left and up"
+	//		RU	"right and up"
+	//		LD	"left and down"
+	//		RD	"left and down"
+	//		BLU	"button left and up"
+	//		BRU	"button right and up"
+	//		BLD	"button left and down"
+	//		BRD	"button left and down"
+	//
+	//	Hold / Tap input commmand strings: (CANNOT mix with any of the above)
+	//		
+	//		TL "tap left"
+	//		TR "tap right"
+	//		TU "tap up"
+	//		TD "tap down"
+	//		HL "hold left"
+	//		HR "hold right"
+	//		HU "hold up"
+	//		HD "hold down"
+	//
+	//count is either number of times tapped (standard decay is)
+	//
+	//Some examples:
+	//G.setEscape( this, "grabvomit", "L R U D", 5, 0 );//Strugging in L R U inputs (5 times in a row) is enough (waiting in the belly takes the counter down, options is 0 for default) to get vomited
+	//G.setEscape( this, "pouncetotail", "BD", 5, 0 );//Strugging in D inputs (5 times in a row) is enough (waiting in the belly takes the counter down, options is 0 for default) to move to tail
+	//G.setEscape( this, "grabdigestend", "W", 10, 0 );	//W = wait, if you wait 10 seconds (no actions, reset on each movement) you'll get instantly digested?
+	//G.setEscape( this, "grabdigestend", "E", 1, 0 );	//E = death
+	//G.setEscape( this, "belly_eject", "TL TR TU TD", 3, 0 );//Strugging in Tap left, tap right, tap up, tap down inputs (3 times in a row) is enough to get vomited
+	//G.setEscape( this, "belly_deeper", "HD", 4, 0 );//Holding/Pleasing down moves you deeper into the belly, if you do this 4 times
+	//
+	G.setEscape( targ, nextanim, inputseq, count, options )
+	
+	//Same as setEscape, except any escape with "nextanim" is replaced with THIS call.
+	G.replaceEscape( targ, nextanim, inputseq, count, options )
+	
+	//Call once a valid frame! Updates digestion if you are setup to do so
+	G.updateDigestion( target, movedex )
+	
+	//Given a struggle object,
+	G.handleBasicStruggle( targ, AO )
+	
+	//Unconsume the player! (given a optional offset and animation)
+	G.unconsumePlayer( target, xposrel, playanim )
+	
+	
+//REQUIRED ANIMATION CODE:
+
+	//Use to indicate this is a IDLE animation in code (is doing NOTHING)
+	G.actIdle( target )
+
+	//Use to indicate this is a MOVING (walk, run) animation in code
+	G.actMove( target, uvx )
+
+	//Attack while moving! hm. Refer to gator
+	G.actMoveAttack( target, uvx, attype )
+	
+	//Indicate this is a BEING HURT animation.
+	G.actHurt( target, knockback )
+
+	//Use to indicate this is a ATTACK (pounce, punch, ect...) animation in code
+	//These are the possible attack types (set type to one of these):
+	//	G.ATTACK_MEDIUM
+	//	G.ATTACK_HIGH
+	//	G.ATTACK_LOW
+	//	G.ATTACK_SPECIAL
+	G.actAttack( target, type ) //1	//reset damages?
+	
+	//Use this to tell the game that the enemy is in a animation that should not be interrupted! (busy)
+	//movex defaults to 0 (nonmoving), set to + to move TOWARD player, - to move AWAY from.
+	G.actBusy( target, movex )
+		
+	//Enemy can be interrupted now (not in a busy anim)
+	G.actUnbusy( target )
+	
+//GAME CONTROL FUNCTIONS:
+	
+	//Returns the current HP pecentage of the player (0.0 .. 100.0)
+	G.getPlayerHealthPercent()
+	
+	//Returns the current HP pecentage of the enemy (0.0 .. 100.0)
+	G.getEnemyHealthPercent()
+	
+	//Returns the current HP of the player (usuallly 0..63 or so)
+	G.getPlayerHP()
+	
+	//Returns the current HP of the enemy
+	G.getEnemyHP()
+	
+	
+//LESSER USED FUNCTIONS AND MISC DONT USE THESE MUCH
+	
+	//Play this file from either a local file "./music/something.mp3" or http.
+	//Example:
+	//	var playthismusic = "D:\\Audio\\Adventure Club - Retro City.mp3";
+	//	trace( "Music path check: " + playthismusic );
+	//	G.musicPlay( playthismusic );
+	//
+	G.musicPlay( localname )
+	
+	//Stops music
+	G.musicStop()
+	
+	//Play a sound from the libray of sounds! (huh)
+	G.playSound( soundkey, extravolume, exparam )//"SF_Swallow.mp3")
+	
+	//Shake the camera! frequency is in revolutions (cycles, so 1.0 == 2 pi), amplitude is in delta pixels
+	//autodecay is OPTIONAL, but you MUST USE IT if your animation can be interrupted.
+	//	-> It is the # of frames the shake will persist before decaying automatically (so if you ARE interrupted, it at least stops!)
+	//
+	G.shakeBegin( freq, amplitude, autodecay )
+	
+	//Stop shaking (decay is in frames)
+	G.shakeEnd( <optional decay> )
+	
+	//Fade out the background in time frames (or to a specific color)
+	//	G.fadeBG( 30, 0x000000 );	//Fade to black in 1 second (30 fps)
+	//	G.fadeBG( 150, 0x0000FF );	//Fade to red in 5 seconds (30 fps)
+	//	G.fadeBG( 0, 0x00FF00 );	//Instantly set to green tint background
+	G.fadeBG( <time>, optionalcolor );
+	
+	//Fade in the background in time frames (or to a specific color, default is 1,1,1)
+	//	G.fadeInBG( 60 );	//Fade back in to default color in 2 seconds
+	//	G.fadeInBG();	//Instantly reset to normal color
+	G.fadeInBG( <time> );
+	
+	//Returns the Cbox clip from a clip (player or enemy.enemy or this)
+	G.getCBox( mc )
+	
+	//Returns the Abox clip from a clip (player or enemy.enemy or this)
+	G.getABox( mc )
+	
+	//Returns the Sbox clip from a clip (player or enemy.enemy or this)
+	G.getSBox( mc )
+	
+	//Returns the player movieclip directly
+	G.getPlayer()
+	
+	//Returns the enemy movieclip directly
+	G.getEnemy()
+	
+	G.getController()
+	
+	//Set if the player has a head or not (decapitate)
+	G.setPlayerHasHead( v)
+	
+	// Log action data (pass a string such as "Fox enjoys thier meal grealy!"
+	G.Log(s)
+	
+	//Set the player spark at a clip, with local offset! (for sparks and stuff)
+	G.setPlayerSparkAt( clip, anim, offsetx, offsety )
+					
+	//Set the enemy spark at a clip, with local offset! (for sparks and stuff)
+	G.setEnemySparkAt( clip, anim, offsetx, offsety )
+	
+	//Set the enemy spark at a clip, with local offset on the VISIBLE SCREEN. Forces scale to be consistent.
+	G.setEnemySparkOnScreen( clip, anim, screenfloatx, screenfloaty, screenscale )
+	
+	//Broken, not really working (yet)
+	//clip is usually "this" or "this.weapon", anim is the animation to play like "spark", param is a new Object({stuff:value}) 
+	G.setEnemySparkAtExact( clip, anim, param )
+	
+	//Get the mc directly for the enemy spark (for interesting effects?)
+	G.getEnemySpark();
+	
+	//Apply some basic physics to the spark independant of flash itself:
+	//Conveinience syntax:
+	//	"MoveUp" pixels to move up
+	//	"MoveRight" pixels to move right
+	//	"MoveLeft" pixels to move left
+	//	"MoveDown" pixels to move down
+	//	"Spin" degrees per frame (-360..360)
+	//	"Shrink" percent to shrink to in 2 seconds (0..100)
+	//Examples:
+	//	"MoveUp,1,Shrink,50"
+	//	"MoveRight,2,Spin,2"
+	G.setEnemySparkPhysics( "MoveUp,1,Shrink,50" );
+	
+	// Pick new enemy based on input (0=random)
+	G.pickEnemy(ev)
+	
+	G.ObjHitsBody(obj)
+	
+	G.ObjHitsBodyCenter(obj)
+	
+	G.ObjHitsHead(obj)
+	
+	G.ObjHitsHeadCenter(obj)
+	
+	//Usage:
+	//	//Pick a clip to get coordinates from, and some offsets ( in this case, x and y )
+	//	var mctrans = g.mcPointToGlobal2( obj.mc.vicbarb, x, y, x + 1, y );		
+	//	tmc._x = mctrans.x0;	//Laggy. not 100% updated really.
+	//	tmc._y = mctrans.y0;
+	//	tmc._rotation = (180/Math.PI)*Math.atan2( mctrans.y1 - mctrans.y0, mctrans.x1 - mctrans.x0 );
+	//	//...
+	//	var res = g.mcPointToLocal( obj.mc.vicbarb, mctrans.x0, mctrans.y0 );
+	//	//Now, res._x == x, res._y == y
+	
+	//Verified 2012-04-05 Given a global position (game coordinates) get it as local to mc.
+	G.mcPointToLocal( mc, px, py ) : Object	
+	
+	//Verified 2012-04-05 Given a local position (clip coordinates) get it as game coordiates (_x,_y)
+	G.mcPointToGlobal( mc, px, py ) : Object
+	
+
+	//Returns a STRING for the player movement, empty is NONE:
+	//If you pass 1, you get the full multi direction string
+	//"" = nothing
+	//"B" = button is DOWN, no directions pressed
+	//"L" = left
+	//"R" = right
+	//"U" = up
+	//"D" = down
+	//"BL" = button + left
+	//"BR" = button + right
+	//"BU" = button + up
+	//"BD" = button + down
+	G.getPlayerRelativeMovement( option ) : String
+	
+	//AO.b	just button animation
+	//AO.l	left motion animation (both l's work for this if missing)
+	//AO.r	right motion animation
+	//AO.u	up motion animation
+	//AO.d	down motion animation
+	//AO.bl	left AND button motion animation
+	//AO.br	right AND button motion animation
+	//AO.bu	up AND button motion animation
+	//AO.bd	down AND button motion animation
+	//returns "" for none used
+	G.getNextAnimation( AO, RM ) : String
+	
+	
+	//not to be used unless necessary: 
+	
+	G.legacySelectAndPlay( target, histobj );
+
+		
+	//Struggle with 4 basic directions:
+	G.legacy4Struggle( this, aright, aleft, aup, adown )
+	//example: _parent.G.legacy4Struggle( _parent, "wiggle0", "wiggle3", "wiggle2", "wiggle1" )
+
+	//Struggle with 8 directions (pleasing)
+	G.legacy8Struggle( this, aright, aleft, aup, adown, bright, bleft, bup, bdown )
+	//example: _parent.G.legacy8Struggle( _parent, "mwiggle0", "mwiggle3", "mwiggle2", "mwiggle1", "wiggle0", "wiggle3", "wiggle2", "wiggle1" );
+		
+	//Plays a random animtion, option 1,2,3,4 anims to choose from
+	G.legacyRandomStruggle( this, aright, aleft, aup, adown )
+
+	//MORE complicated fun:
+	//This will handle the 4 direction wiggle, AND the button + 4 direction wiggle animations the same.
+	//You can provide a animation name, OR a distribution with object syntax
+	//example: _parent.G.legacy4StruggleDist( _parent, Object({ "wiggle0":1,"wiggle0a":5 }), "wiggle3", "wiggle2", "wiggle1" )
+	//Handles all 4 directions and 4 directions + button.
+	//example: _parent.G.legacy8StruggleDist( 
+	
+	
+TODO:
+
+	BUGS:
+		. Game starts up and freaks out sometimes (internet loading issue?)
+		FIXED with G.stopDigestion() on hit frames . Qu nose attack breaks if you hit him while he's doing it (check consume locking on hits, probably the cause.)
+		FIXED with G.clearAnims( this );. There is a bug when Qu Tii does a nose vacuum and you move deeper into it. If you struggle at any point after you move deeper into it you snap back to the front belly with no animation. 
+			To replicate, get eaten normally, wiggle through. Then get nosed, and wiggle constantly. it'll break! huh.
+
+	-> Make "defense" actually work for PLAYER only?
+		-> If blocking in the right direction, stop attack? Hm. Trigger QTE(15, any) if "consumed" while blocking?
+	
+	-> Make "charge" attacks work (hold attack for +10 frames, then on RELEASING a direction execute a stronger attack?)
+		Hm... special input attacks for players?
+
+	-> Need to link clips to align with camera ON camera update (callback proc)
+		-> Should fix the particle issue
+		? Only on folder boundaries?
+		-> Remove alignment functions, or fix particles?
+		
+	-> Need callbacks for "events" that occur (player hit, enemy hit, ect...) stats
+	
+	-> 2D physics? flying battles? ...
+
+	
+GUI DEPRECATED AND EDITING
+
+RE HP
+on (press) {
+	_parent.controller.resetPlayer();
+}
+
+SET PLAYER HP
+on (press) {
+	
+	var xp = hpslider._xmouse;
+	var yp = hpslider._ymouse;
+	var xs = hpslider._width;
+	var ys = hpslider._height;
+	var factor = (Math.abs( yp ) / xs);
+	//Boost factor:
+	factor = (factor - 0.1)/0.8;
+	
+	//trace( factor*63 + " " + xp + " " + yp + " : " + xs + " " + ys );
+	_parent.controller.setPlayerHP( factor*63 );//hurtPlayer( _parent.controller9999 );
+}
+
+New ENEMY
+on (press) {
+	
+	emptygrid.drawnyet = undefined;
+	emptygrid.selectnext = selectf;
+	
+	_parent.controller.pickEnemy(0);
+	_parent.controller.resetPlayer();
+}
+
+
+Toggle Naughty
+on (press) {
+	_parent.controller.toggleOption( "showNaughty" );//( factor*63 );//hurtPlayer( _parent.controller9999 );
+}
+
+Toggle Mature
+on (press) {
+	_parent.controller.toggleOption( "showDirty" );//( factor*63 );//hurtPlayer( _parent.controller9999 );
+}
+
+Change player type
+on (press) {
+	var parc = _parent.controller;
+	parc.setPlayerGraphic( parc.getPlayerGraphic() + 1 );
+}
+
+
+Display "Help"
+on (press) {
+	var parc = _parent.controller;
+	parc.displayHelp();
+}
+
+Toggle Quality
+on (press) {
+	var parc = _parent.controller;
+	parc.toggleQuality();
+}
+
+Toggle Slow down
+on (press) {
+	var parc = _parent.controller;
+
+	parc.toggleSlowMode();
+}
+
+Toggle TRUE pause
+on (press) {
+	var parc = _parent.controller;
+	parc.GLOBAL_TRUEPAUSE = !parc.GLOBAL_TRUEPAUSE;
+	/*if (!parc.GLOBAL_PAUSECTR) {
+		if (!parc.GLOBAL_PAUSE) {
+			parc.pauseall();
+		} else {
+			parc.unpauseall();
+		}
+	}*/
+}
+
+Toggle attack or love
+on (press) {
+	_parent.controller.setPlayerMode();
+}
+
+
+//PROBLEM GUI AREAS:
+sld_sound	(sound volume controls)
+
+emenydir	(direction enemy is)
+
+gui_playergfxid	(display of player index)
+gui_playerstatus (dispaly of player status)
+gui_enemystatus (dispaly of enemy status)
+gui_enemyname	(dispaly of enemy name)
+gui_points	(points scored)
+gui_kills	(kills scored)
+
+gui_playerhp	(shows player HP! Slider!)
+gui_enemyhp		(shows enemy HP! slider!
+
+//ALWAYS PRESENT:
+chatbubble
+selectdown
