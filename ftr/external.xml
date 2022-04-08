@@ -2,14 +2,8 @@
 
 <!-- These were downloaded exactly from FA -->
 <enemy path="enemies/1420351883.imaginaryz_lizzy.swf" />
-<enemy path="enemies/1420351021.imaginaryz_fatgatoral.swf" />
 <enemy path="enemies/1420351997.imaginaryz_orangeraptor.swf" />
 <enemy path="enemies/1418192026.imaginaryz_qu_tii.swf" />
-<enemy path="enemies/1418191910.imaginaryz_anthro_rex_ext.swf" />
-
-<!-- Good to keep final enemies separate from testing / in progress ones -->
-<enemy path="source/Galliosaur.swf" />
-<enemy path="source/serpentmage.swf" />
 
 <!-- Add your own enemies here! DO IT! Use Template_2019.fla -->
 <enemy path='enemies/1533235669.alsnapz_alz_anthrokomodo2.swf' />
